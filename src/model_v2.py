@@ -1,0 +1,43 @@
+"""
+model_v2.py
+v2 of the FAQ assistant: this IS machine learning.
+Uses TF-IDF to convert questions into numbers, then trains a
+Logistic Regression classifier to predict the CATEGORY of a question.
+Honest limitation: with only ~10-60 rows, this is learning from a
+very small dataset — not comparable to production ML.
+"""
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from load_data import load_faq_data
+
+
+def train_classifier(data):
+    vectorizer = TfidfVectorizer()
+    X = vectorizer.fit_transform(data["question"])
+    y = data["category"]
+    model = LogisticRegression()
+    model.fit(X, y)
+    return vectorizer, model
+
+
+def predict_category(user_question, vectorizer, model):
+    X_new = vectorizer.transform([user_question])
+    return model.predict(X_new)[0]
+
+
+def get_answer_by_category(category, data):
+    matches = data[data["category"] == category]
+    if len(matches) == 0:
+        return "Sorry, no answer found for this category."
+    return matches.iloc[0]["answer"]
+
+
+if __name__ == "__main__":
+    data = load_faq_data("data/sample_data.csv")
+    vectorizer, model = train_classifier(data)
+    test_questions = ["kya larka laki ki class seprated hai", "mujhay gara koi maray toh mein kya karoon"]
+    for q in test_questions:
+        category = predict_category(q, vectorizer, model)
+        answer = get_answer_by_category(category, data)
+        print(f"Input: {q}\nPredicted category: {category}\nAnswer: {answer}\n---")

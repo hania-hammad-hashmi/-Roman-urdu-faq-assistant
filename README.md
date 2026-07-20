@@ -17,3 +17,14 @@ It also includes a minimum confidence threshold (0.5) — if the best match's
 similarity score falls below this, the tool says it doesn't know rather than
 guessing. This isn't perfect: testing showed a borderline question can still
 score just above the threshold and return a topically related but incorrect answer.
+
+## v2: Machine Learning Classifier
+`src/model_v2.py` uses TF-IDF to convert questions into numeric vectors, then
+trains a Logistic Regression classifier to predict the category of a new question.
+This is genuine, if small-scale, machine learning.
+
+**Known limitation:** unlike v1, this classifier has no confidence threshold —
+it always predicts the closest known category, even for questions completely
+unrelated to the dataset (e.g. a question about classroom seating returned a
+"fees" answer). v1's `min_confidence` check has no equivalent here yet.
+

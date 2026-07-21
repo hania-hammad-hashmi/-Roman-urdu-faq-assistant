@@ -36,7 +36,7 @@ def get_answer_by_category(category, data):
 if __name__ == "__main__":
     data = load_faq_data("data/sample_data.csv")
     vectorizer, model = train_classifier(data)
-    test_questions = ["kya larka laki ki class seprated hai", "mujhay gara koi maray toh mein kya karoon"]
+    test_questions = ["class room ki seating kya hogi", "agar mein uniform mein na aaon toh kya hoga","meray baba mujhay maarat hein subha","mujhay class mein neend aati hai"]
     for q in test_questions:
         category = predict_category(q, vectorizer, model)
         answer = get_answer_by_category(category, data)

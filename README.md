@@ -27,4 +27,29 @@ This is genuine, if small-scale, machine learning.
 it always predicts the closest known category, even for questions completely
 unrelated to the dataset (e.g. a question about classroom seating returned a
 "fees" answer). v1's `min_confidence` check has no equivalent here yet.
+**Known limitation:**
+- **v1 (fuzzy matching)** uses a min_confidence threshold (0.5) to avoid guessing
+  wrong. Testing across multiple rounds found this only partially works: on Day 6,
+  2 of 3 unrelated test questions still passed the threshold with wrong answers.
+  On Day 10, a water-related question was incorrectly matched to an unrelated
+  "old books" question at a 0.57 score — still above threshold. The confidence
+  score does not reliably reflect topical correctness.
 
+- **v2 (ML classifier)** has no confidence threshold at all — it always predicts
+  the closest known category. A direct comparison (Day 8) showed v1 correctly
+  refusing 3 unrelated questions (scores 0.48/0.37/0.45) while v2 confidently
+  answered all 3 wrong. However, v2 is not uniformly worse: on Day 10, v2 correctly
+  identified the "water" category for a question v1 had matched incorrectly,
+  likely because it learned water-related word patterns during training rather
+  than relying on a single closest-question comparison.
+
+- **v2 has no handling for empty input** and was not tested against it.
+
+- **Dataset size** (~[your actual row count — fill in]) rows) is small, which
+  limits how well the ML classifier can generalize to phrasing it hasn't seen.
+
+- **Overall:** neither version reliably distinguishes "confident and correct" from
+  "confident and wrong." v1 fails by passing a bad match through its threshold;
+  v2 fails by having no threshold at all. Fixing this properly would likely
+  require a larger dataset and a confidence mechanism for v2, which is out of
+  scope for this version.
